@@ -83,7 +83,27 @@ export default async function Home() {
         </section>
 
         <footer className="rounded-2xl border border-zinc-200 bg-white p-5 text-sm text-zinc-600">
-          Questions? <Link href="/contact" className="font-medium text-zinc-900 underline">Contact us</Link>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span>
+              Questions? <Link href="/contact" className="font-medium text-zinc-900 underline">Contact us</Link>
+            </span>
+            <a
+              href="http://hasan-ehsan.cloud/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-zinc-900 underline"
+            >
+              Profile
+            </a>
+            <a
+              href="http://blog.hasan-ehsan.cloud/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-zinc-900 underline"
+            >
+              Blog
+            </a>
+          </div>
         </footer>
       </main>
     </div>
