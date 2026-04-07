@@ -57,7 +57,7 @@ export function RegisterForm() {
             Register to upload files, use custom AI instructions, and keep your results in one place.
           </p>
           <div className="mt-8 space-y-3 text-sm text-zinc-700">
-            <p>• 5 free tries included</p>
+            <p>• 5 free tries per week</p>
             <p>• Background processing workflow</p>
             <p>• Download-ready outputs</p>
           </div>

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getUserUsage } from "@/lib/usage";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -9,11 +10,8 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const [user, recentDocuments] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { triesUsed: true, triesLimit: true },
-    }),
+  const [usage, recentDocuments] = await Promise.all([
+    getUserUsage(session.user.id),
     prisma.document.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
@@ -22,9 +20,8 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const triesUsed = user?.triesUsed ?? 0;
-  const triesLimit = user?.triesLimit ?? 5;
-  const triesRemaining = Math.max(0, triesLimit - triesUsed);
+  const triesUsed = usage.triesUsed;
+  const triesRemaining = usage.triesRemaining;
 
   return (
     <div className="space-y-6">
@@ -35,11 +32,11 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Tries Used</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Tries Used (7d)</p>
           <p className="mt-2 text-2xl font-semibold text-zinc-900">{triesUsed}</p>
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Tries Remaining</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Tries Remaining (7d)</p>
           <p className="mt-2 text-2xl font-semibold text-zinc-900">{triesRemaining}</p>
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-5">
@@ -50,7 +47,7 @@ export default async function DashboardPage() {
 
       {triesRemaining <= 0 ? (
         <section className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          No tries remaining. Upload is disabled.
+          No tries remaining this week. Upload is disabled.
         </section>
       ) : null}
 

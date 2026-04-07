@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { enqueueDocumentJob } from "@/lib/queue";
 import { saveUploadedFile } from "@/lib/storage";
-import { hasRemainingTries } from "@/lib/usage";
+import { getUserUsage, hasRemainingTries } from "@/lib/usage";
 import { isAllowedFile, outputTypeSchema, sanitizeInstructions } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, triesUsed: true, triesLimit: true },
+    select: { id: true },
   });
 
   if (!user) {
@@ -33,16 +33,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  if (!hasRemainingTries(user.triesUsed, user.triesLimit)) {
-    logUploadStep("tries_exhausted", { userId: user.id, triesUsed: user.triesUsed, triesLimit: user.triesLimit });
-    return NextResponse.json({ error: "No tries remaining." }, { status: 403 });
+  const usage = await getUserUsage(user.id);
+
+  if (!hasRemainingTries(usage.triesUsed, usage.triesLimit)) {
+    logUploadStep("tries_exhausted", { userId: user.id, triesUsed: usage.triesUsed, triesLimit: usage.triesLimit });
+    return NextResponse.json({ error: "No tries remaining this week." }, { status: 403 });
   }
 
   logUploadStep("tries_check_ok", {
     userId: user.id,
-    triesUsed: user.triesUsed,
-    triesLimit: user.triesLimit,
-    triesRemaining: user.triesLimit - user.triesUsed,
+    triesUsed: usage.triesUsed,
+    triesLimit: usage.triesLimit,
+    triesRemaining: usage.triesLimit - usage.triesUsed,
   });
 
   const formData = await req.formData();
@@ -143,10 +145,6 @@ export async function POST(req: Request) {
       prisma.document.update({
         where: { id: document.id },
         data: { status: "queued" },
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: { triesUsed: { increment: 1 } },
       }),
       prisma.usageEvent.create({
         data: {

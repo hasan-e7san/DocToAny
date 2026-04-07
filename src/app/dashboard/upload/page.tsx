@@ -1,6 +1,6 @@
 import { UploadForm } from "@/components/upload-form";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getUserUsage } from "@/lib/usage";
 import { redirect } from "next/navigation";
 
 export default async function UploadPage() {
@@ -9,18 +9,14 @@ export default async function UploadPage() {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { triesUsed: true, triesLimit: true },
-  });
-
-  const triesRemaining = Math.max(0, (user?.triesLimit ?? 5) - (user?.triesUsed ?? 0));
+  const usage = await getUserUsage(session.user.id);
+  const triesRemaining = usage.triesRemaining;
 
   return (
     <div className="max-w-4xl space-y-5">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Upload Document</h1>
-        <p className="mt-1 text-sm text-zinc-600">Tries remaining: {triesRemaining}</p>
+        <p className="mt-1 text-sm text-zinc-600">Tries remaining this week: {triesRemaining}</p>
       </div>
       <UploadForm triesRemaining={triesRemaining} />
     </div>

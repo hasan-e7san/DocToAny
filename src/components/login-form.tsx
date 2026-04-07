@@ -52,7 +52,7 @@ export function LoginForm() {
           <div className="mt-8 space-y-3 text-sm text-zinc-700">
             <p>• PDF, DOCX, XLSX uploads</p>
             <p>• JSON, Markdown, CSV, Summary output</p>
-            <p>• 5 free tries per account</p>
+            <p>• 5 free tries per week</p>
           </div>
         </section>
 

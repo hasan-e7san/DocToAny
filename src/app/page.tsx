@@ -76,7 +76,7 @@ export default async function Home() {
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-white p-6">
             <h2 className="text-sm font-medium text-zinc-500">Free Plan</h2>
-            <p className="mt-2 text-lg font-semibold">5 tries per account</p>
+            <p className="mt-2 text-lg font-semibold">5 tries per week</p>
           </div>
         </section>
 
