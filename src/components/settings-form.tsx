@@ -2,6 +2,8 @@
 
 import { FormEvent, useState } from "react";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface SettingsFormProps {
   initialName: string;
   initialEmail: string;
@@ -22,10 +24,25 @@ export function SettingsForm({ initialName, initialEmail }: SettingsFormProps) {
     setProfileMessage("");
     setSavingProfile(true);
 
+    const sanitizedName = name.trim();
+    const sanitizedEmail = email.trim().toLowerCase();
+
+    if (sanitizedName.length < 2) {
+      setSavingProfile(false);
+      setProfileMessage("Name must be at least 2 characters.");
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(sanitizedEmail)) {
+      setSavingProfile(false);
+      setProfileMessage("Please enter a valid email address.");
+      return;
+    }
+
     const response = await fetch("/api/me/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name: sanitizedName, email: sanitizedEmail }),
     });
 
     const payload = await response.json().catch(() => ({}));
@@ -43,8 +60,21 @@ export function SettingsForm({ initialName, initialEmail }: SettingsFormProps) {
     event.preventDefault();
     setPasswordMessage("");
 
-    if (!newPassword) {
+    const currentPasswordValue = currentPassword.trim();
+    const newPasswordValue = newPassword.trim();
+
+    if (!newPasswordValue) {
       setPasswordMessage("New password is required.");
+      return;
+    }
+
+    if (newPasswordValue.length < 8) {
+      setPasswordMessage("New password must be at least 8 characters.");
+      return;
+    }
+
+    if (!currentPasswordValue) {
+      setPasswordMessage("Current password is required.");
       return;
     }
 
@@ -54,8 +84,8 @@ export function SettingsForm({ initialName, initialEmail }: SettingsFormProps) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        currentPassword,
-        newPassword,
+        currentPassword: currentPasswordValue,
+        newPassword: newPasswordValue,
       }),
     });
 

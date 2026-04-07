@@ -4,6 +4,9 @@ import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AppLogo } from "@/components/app-logo";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm() {
   const [error, setError] = useState<string>("");
@@ -16,8 +19,20 @@ export function LoginForm() {
     setError("");
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
+
+    if (!EMAIL_PATTERN.test(email)) {
+      setLoading(false);
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setLoading(false);
+      setError("Password must be at least 8 characters.");
+      return;
+    }
 
     const callbackUrl = "/dashboard";
     const result = await signIn("credentials", {
@@ -58,6 +73,7 @@ export function LoginForm() {
 
         <section className="p-6 md:p-10">
           <div className="mx-auto w-full max-w-sm">
+            <AppLogo className="mb-4" />
             <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">Login</h2>
             <p className="mt-2 text-sm text-zinc-600">Use your email and password to access the dashboard.</p>
 

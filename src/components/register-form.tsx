@@ -4,6 +4,9 @@ import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AppLogo } from "@/components/app-logo";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function RegisterForm() {
   const [message, setMessage] = useState<string>("");
@@ -17,10 +20,28 @@ export function RegisterForm() {
 
     const formData = new FormData(event.currentTarget);
     const payload = {
-      name: String(formData.get("name") ?? ""),
-      email: String(formData.get("email") ?? ""),
+      name: String(formData.get("name") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim().toLowerCase(),
       password: String(formData.get("password") ?? ""),
     };
+
+    if (payload.name.length < 2) {
+      setLoading(false);
+      setMessage("Name must be at least 2 characters.");
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(payload.email)) {
+      setLoading(false);
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (payload.password.length < 8) {
+      setLoading(false);
+      setMessage("Password must be at least 8 characters.");
+      return;
+    }
 
     const response = await fetch("/api/auth/register", {
       method: "POST",
@@ -65,6 +86,7 @@ export function RegisterForm() {
 
         <section className="p-6 md:p-10">
           <div className="mx-auto w-full max-w-sm">
+            <AppLogo className="mb-4" />
             <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">Register</h2>
             <p className="mt-2 text-sm text-zinc-600">Create your account with email and password.</p>
 

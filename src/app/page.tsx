@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { AppLogo } from "@/components/app-logo";
 
 export default async function Home() {
   const session = await auth();
@@ -12,6 +13,7 @@ export default async function Home() {
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-zinc-100" />
           <div className="relative grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-end">
             <div>
+              <AppLogo className="mb-4" />
               <span className="inline-flex rounded-full border border-zinc-300 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600">
                 AI Document Processing SaaS
               </span>

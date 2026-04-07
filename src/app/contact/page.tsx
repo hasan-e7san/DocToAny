@@ -1,6 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { AppLogo } from "@/components/app-logo";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ContactPage() {
   const [message, setMessage] = useState<string>("");
@@ -8,16 +11,41 @@ export default function ContactPage() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setLoading(true);
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const payload = {
-      name: String(formData.get("name") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      subject: String(formData.get("subject") ?? ""),
-      message: String(formData.get("message") ?? ""),
+      name: String(formData.get("name") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim().toLowerCase(),
+      subject: String(formData.get("subject") ?? "").trim(),
+      message: String(formData.get("message") ?? "").trim(),
     };
+
+    if (payload.name.length < 2) {
+      setLoading(false);
+      setMessage("Name must be at least 2 characters.");
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(payload.email)) {
+      setLoading(false);
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (payload.subject.length < 2) {
+      setLoading(false);
+      setMessage("Subject must be at least 2 characters.");
+      return;
+    }
+
+    if (payload.message.length < 5) {
+      setLoading(false);
+      setMessage("Message must be at least 5 characters.");
+      return;
+    }
 
     const response = await fetch("/api/contact", {
       method: "POST",
@@ -27,7 +55,7 @@ export default function ContactPage() {
 
     setLoading(false);
     if (response.ok) {
-      event.currentTarget.reset();
+      form.reset();
       setMessage("Your message was sent successfully.");
       return;
     }
@@ -38,6 +66,7 @@ export default function ContactPage() {
   return (
     <main className="flex flex-1 items-center justify-center bg-zinc-100 px-6 py-10 md:py-14">
       <div className="w-full max-w-3xl rounded-3xl border border-zinc-200 bg-white p-6 md:p-10">
+        <AppLogo className="mb-4" />
         <h1 className="text-3xl font-semibold tracking-tight">Contact</h1>
         <p className="mt-2 text-sm text-zinc-600">Send us your question and we will get back to you soon.</p>
 

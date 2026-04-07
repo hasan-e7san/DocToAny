@@ -5,6 +5,13 @@ import { FormEvent, useEffect, useState } from "react";
 
 const OUTPUT_LOCAL_KEY = "upload_output_type";
 const INSTRUCTIONS_LOCAL_KEY = "upload_instructions_draft";
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_EXTENSIONS = ["pdf", "docx", "xlsx"];
+const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+];
 
 export function UploadForm({ triesRemaining }: { triesRemaining: number }) {
   const [outputType, setOutputType] = useState<OutputType>(() => {
@@ -49,6 +56,32 @@ export function UploadForm({ triesRemaining }: { triesRemaining: number }) {
     const formData = new FormData(form);
     formData.set("outputType", outputType);
     formData.set("instructions", instructions);
+
+    const fileCandidate = formData.get("file");
+    if (!(fileCandidate instanceof File)) {
+      setLoading(false);
+      setStatus("Please select a file.");
+      return;
+    }
+
+    const extension = fileCandidate.name.split(".").pop()?.toLowerCase() ?? "";
+    if (!ALLOWED_EXTENSIONS.includes(extension) || !ALLOWED_MIME_TYPES.includes(fileCandidate.type)) {
+      setLoading(false);
+      setStatus("Only PDF, DOCX, and XLSX files are supported.");
+      return;
+    }
+
+    if (fileCandidate.size > MAX_FILE_SIZE_BYTES) {
+      setLoading(false);
+      setStatus("File is too large. Max size is 10MB.");
+      return;
+    }
+
+    if (instructions.length > 1000) {
+      setLoading(false);
+      setStatus("Instructions must be 1000 characters or less.");
+      return;
+    }
 
     const response = await fetch("/api/upload", {
       method: "POST",
