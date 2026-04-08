@@ -18,6 +18,11 @@ Public SaaS MVP for processing PDF, DOCX, and XLSX documents into JSON, Markdown
 copy .env.example .env
 ```
 
+Set these if you want analytics and canonical SEO URLs:
+
+- `NEXT_PUBLIC_SITE_URL` (production app URL, e.g. `https://example.com`)
+- `NEXT_PUBLIC_GA_ID` (Google Analytics Measurement ID)
+
 2. Install dependencies:
 
 ```bash
