@@ -35,23 +35,23 @@ export default async function DocumentsPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
                 <tr>
-                  <th className="px-5 py-3 font-medium">File</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium">Output</th>
-                  <th className="px-5 py-3 font-medium">Created</th>
+                  <th className="px-4 py-3 font-medium sm:px-5">File</th>
+                  <th className="px-4 py-3 font-medium sm:px-5">Status</th>
+                  <th className="hidden px-4 py-3 font-medium sm:table-cell sm:px-5">Output</th>
+                  <th className="hidden px-4 py-3 font-medium md:table-cell sm:px-5">Created</th>
                 </tr>
               </thead>
               <tbody>
                 {documents.map((doc) => (
                   <tr key={doc.id} className="border-t border-zinc-200">
-                    <td className="px-5 py-3">
-                      <Link href={`/dashboard/documents/${doc.id}`} className="font-medium text-zinc-900 hover:underline">
+                    <td className="px-4 py-3 sm:px-5">
+                      <Link href={`/dashboard/documents/${doc.id}`} className="block max-w-[220px] truncate font-medium text-zinc-900 hover:underline sm:max-w-none">
                         {doc.originalName}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-zinc-600">{doc.status}</td>
-                    <td className="px-5 py-3 text-zinc-600">{doc.selectedOutputType}</td>
-                    <td className="px-5 py-3 text-zinc-600">{doc.createdAt.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-zinc-600 sm:px-5">{doc.status}</td>
+                    <td className="hidden px-4 py-3 text-zinc-600 sm:table-cell sm:px-5">{doc.selectedOutputType}</td>
+                    <td className="hidden px-4 py-3 text-zinc-600 md:table-cell sm:px-5">{doc.createdAt.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

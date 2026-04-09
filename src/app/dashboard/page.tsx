@@ -52,34 +52,34 @@ export default async function DashboardPage() {
       ) : null}
 
       <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-        <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-4 sm:px-5">
           <h2 className="text-base font-semibold text-zinc-900">Recent Documents</h2>
           <Link href="/dashboard/documents" className="text-sm font-medium text-zinc-700 underline">
             View all
           </Link>
         </div>
         {recentDocuments.length === 0 ? (
-          <p className="px-5 py-6 text-sm text-zinc-600">No documents yet.</p>
+          <p className="px-4 py-6 text-sm text-zinc-600 sm:px-5">No documents yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500">
                 <tr>
-                  <th className="px-5 py-3 font-medium">File</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium">Output</th>
+                  <th className="px-4 py-3 font-medium sm:px-5">File</th>
+                  <th className="px-4 py-3 font-medium sm:px-5">Status</th>
+                  <th className="hidden px-4 py-3 font-medium sm:table-cell sm:px-5">Output</th>
                 </tr>
               </thead>
               <tbody>
                 {recentDocuments.map((doc) => (
                   <tr key={doc.id} className="border-t border-zinc-200">
-                    <td className="px-5 py-3">
-                      <Link href={`/dashboard/documents/${doc.id}`} className="font-medium text-zinc-900 hover:underline">
+                    <td className="px-4 py-3 sm:px-5">
+                      <Link href={`/dashboard/documents/${doc.id}`} className="block max-w-[220px] truncate font-medium text-zinc-900 hover:underline sm:max-w-none">
                         {doc.originalName}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-zinc-600">{doc.status}</td>
-                    <td className="px-5 py-3 text-zinc-600">{doc.selectedOutputType}</td>
+                    <td className="px-4 py-3 text-zinc-600 sm:px-5">{doc.status}</td>
+                    <td className="hidden px-4 py-3 text-zinc-600 sm:table-cell sm:px-5">{doc.selectedOutputType}</td>
                   </tr>
                 ))}
               </tbody>

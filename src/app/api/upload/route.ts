@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { enqueueDocumentJob } from "@/lib/queue";
+import { enforceRateLimit, getClientIp, isTrustedOrigin } from "@/lib/request-security";
 import { saveUploadedFile } from "@/lib/storage";
 import { getUserUsage, hasRemainingTries } from "@/lib/usage";
 import { isAllowedFile, outputTypeSchema, sanitizeInstructions } from "@/lib/validators";
@@ -15,10 +16,33 @@ function logUploadStep(step: string, details: Record<string, unknown> = {}) {
 export async function POST(req: Request) {
   logUploadStep("request_received");
 
+  if (!isTrustedOrigin(req)) {
+    logUploadStep("validation_failed", { reason: "invalid_origin" });
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     logUploadStep("auth_failed");
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  const clientIp = getClientIp(req);
+  const rateLimit = await enforceRateLimit({
+    key: `ratelimit:upload:${session.user.id}:${clientIp}`,
+    limit: 40,
+    windowSeconds: 10 * 60,
+  });
+
+  if (!rateLimit.allowed) {
+    logUploadStep("validation_failed", { reason: "rate_limited", userId: session.user.id, clientIp });
+    return NextResponse.json(
+      { error: "Too many upload attempts. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      }
+    );
   }
 
   logUploadStep("auth_ok", { userId: session.user.id });

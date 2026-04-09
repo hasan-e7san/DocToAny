@@ -48,3 +48,11 @@ export function isAllowedFile(fileName: string, mimeType: string): boolean {
 export function sanitizeInstructions(input: string): string {
   return input.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, MAX_INSTRUCTIONS_LENGTH);
 }
+
+export function sanitizeTextInput(input: string, maxLength: number): string {
+  return input
+    .normalize("NFKC")
+    .replace(/[\u0000-\u001f\u007f]/g, "")
+    .trim()
+    .slice(0, maxLength);
+}
