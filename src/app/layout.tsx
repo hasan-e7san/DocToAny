@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 
 const siteName = "DocToObject";
 const siteDescription =
-  "AI-powered document processing SaaS for converting PDF, DOCX, and XLSX into structured output.";
+  "AI-powered document processing SaaS for converting PDF, DOCX, and XLSX into structured output formats.";
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  (process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata: Metadata = {
@@ -39,9 +39,6 @@ export const metadata: Metadata = {
   authors: [{ name: siteName }],
   creator: siteName,
   publisher: siteName,
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -49,11 +46,20 @@ export const metadata: Metadata = {
     siteName,
     title: `${siteName} | AI Document Processing`,
     description: siteDescription,
+    images: [
+      {
+        url: "/icons8-document-250.png",
+        width: 250,
+        height: 250,
+        alt: `${siteName} logo`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteName} | AI Document Processing`,
     description: siteDescription,
+    images: ["/icons8-document-250.png"],
   },
   robots: {
     index: true,
@@ -67,10 +73,11 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/fav.icon",
-    shortcut: "/fav.icon",
-    apple: "/fav.icon",
+    icon: [{ url: "/icons8-document-250.png", type: "image/png" }, { url: "/fav.icon" }],
+    shortcut: ["/icons8-document-250.png"],
+    apple: [{ url: "/icons8-document-250.png", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -92,8 +99,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4305704904656915"
-          crossOrigin="anonymous"></script>
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4305704904656915"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body className="min-h-full flex flex-col">
@@ -116,10 +126,8 @@ export default function RootLayout({
           </>
         ) : null}
 
-        <Script
-          id="website-json-ld"
+        <script
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 

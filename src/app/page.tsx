@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { AppLogo } from "@/components/app-logo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Document Processing",
+  description:
+    "Convert PDF, DOCX, and XLSX files into JSON, Markdown, CSV, or concise summaries with optional AI instructions.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default async function Home() {
   const session = await auth();
@@ -88,7 +98,7 @@ export default async function Home() {
               Questions? <Link href="/contact" className="font-medium text-zinc-900 underline">Contact us</Link>
             </span>
             <a
-              href="http://hasan-ehsan.cloud/"
+              href="https://hasan-ehsan.cloud/"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-zinc-900 underline"
@@ -96,7 +106,7 @@ export default async function Home() {
               Profile
             </a>
             <a
-              href="http://blog.hasan-ehsan.cloud/"
+              href="https://blog.hasan-ehsan.cloud/"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-zinc-900 underline"

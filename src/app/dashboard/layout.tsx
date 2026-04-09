@@ -2,7 +2,15 @@ import { AppLogo } from "@/components/app-logo";
 import { LogoutButton } from "@/components/logout-button";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function DashboardLayout({
   children,
